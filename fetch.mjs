@@ -63,7 +63,23 @@ async function load(s) {
   return parseFeed(xml);
 }
 
-const sources = JSON.parse(await readFile(SOURCES_FILE, "utf8"));
+const baseSrc = JSON.parse(await readFile(SOURCES_FILE, "utf8"));
+const siteBase = process.env.SITE_URL || process.env.URL;
+const remote = async (kind) => {
+  if (!siteBase) return [];
+  try {
+    const r = await fetch(`${siteBase}/api/${kind}`, { headers: { "x-team-code": process.env.TEAM_CODE || "" }, signal: AbortSignal.timeout(15000) });
+    return r.ok ? await r.json() : [];
+  } catch { return []; }
+};
+const custom = (await remote("sources")).map((c) => ({ name: c.name, url: c.url, region: c.region, custom: true }));
+const down = {};
+for (const v of await remote("votes")) if (Date.now() - new Date(v.createdAt) < 7 * 864e5) down[v.feed] = (down[v.feed] || 0) + 1;
+const status = [...baseSrc, ...custom].map((s) => ({ name: s.name, region: s.region, custom: !!s.custom, votes: down[s.name] || 0, blocked: (down[s.name] || 0) > 4 }));
+status.filter((s) => s.blocked).forEach((s) => console.log(`⛔ ${s.name}: 7 günde ${s.votes} ▼, atlandı`));
+await mkdir("data", { recursive: true });
+await writeFile("data/sources-status.json", JSON.stringify(status));
+const sources = [...baseSrc, ...custom].filter((s) => !status.find((x) => x.name === s.name)?.blocked);
 const settled = await Promise.allSettled(sources.map(load));
 const cutoff = Date.now() - MAX_AGE_DAYS * 864e5;
 const seen = new Set();
@@ -81,7 +97,7 @@ settled.forEach((r, i) => {
     if (seen.has(key)) continue;
     seen.add(key);
     items.push({ title: it.title, link: it.link, summary: it.summary, date: it.date.toISOString(),
-      source: it.pub || s.name, region: s.region, cat: cat || "Diğer" });
+      source: it.pub || s.name, feed: s.name, region: s.region, cat: cat || "Diğer" });
     kept++;
   }
   console.log(`✓ ${s.name}: ${kept} öğe`);
@@ -136,7 +152,7 @@ await writeFile("data/manifest.json", JSON.stringify({ months: Object.keys(byMon
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 const latest = [...all.values()].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 100);
 await writeFile("data/feed.xml", `<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0"><channel><title>Startup Radar</title><link>${esc(SITE_URL || "https://example.netlify.app")}</link><description>Startup ecosystem feed</description>
+<rss version="2.0"><channel><title>Girişim Radarı</title><link>${esc(SITE_URL || "https://example.netlify.app")}</link><description>Girişim ekosistemi: yarışma, hibe, program, etkinlik</description>
 ${latest.map((i) => `<item><title>${esc(`[${i.cat}] ${i.title}`)}</title><link>${esc(i.link)}</link><guid isPermaLink="false">${i.id}</guid><pubDate>${new Date(i.date).toUTCString()}</pubDate><description>${esc(i.summary)}</description></item>`).join("\n")}
 </channel></rss>`);
 console.log(`${added} yeni öğe, arşivde toplam ${all.size}`);

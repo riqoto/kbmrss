@@ -16,9 +16,14 @@ jobs:
         with: { node-version: 20 }
       - run: npm i
       - run: node fetch.mjs
-      - name: Bookmark backup
-        run: curl -fsS -H "x-team-code: ${{ secrets.TEAM_CODE }}" "${{ vars.SITE_URL }}/api/bookmarks" -o data/bookmarks.json || true
+        env:
+          SITE_URL: ${{ vars.SITE_URL }}
+          TEAM_CODE: ${{ secrets.TEAM_CODE }}
+      - name: Backup
+        run: |
+          mkdir -p backup
+          for k in bookmarks votes sources; do curl -fsS -H "x-team-code: ${{ secrets.TEAM_CODE }}" "${{ vars.SITE_URL }}/api/$k" -o backup/$k.json || true; done
       - run: |
           git config user.name radar-bot && git config user.email bot@users.noreply.github.com
-          git add data
+          git add data backup
           git diff --cached --quiet || (git commit -m "data: $(date -u +%F)" && git push)
