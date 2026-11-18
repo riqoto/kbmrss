@@ -1,0 +1,11 @@
+[build]
+  command = "mkdir -p public && cp -r web/. public/ && cp -r data public/data"
+  publish = "public"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

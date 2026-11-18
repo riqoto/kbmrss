@@ -1,0 +1,19 @@
+[
+  { "name": "Webrazzi", "url": "https://webrazzi.com/feed/", "region": "TR", "filter": true },
+  { "name": "eGirişim", "url": "https://egirisim.com/feed/", "region": "TR", "filter": true },
+  { "name": "TechCrunch Startups", "url": "https://techcrunch.com/category/startups/feed/", "region": "Global", "filter": true },
+  { "name": "EU-Startups", "url": "https://www.eu-startups.com/feed/", "region": "Global", "filter": true },
+
+  { "name": "GNews: hackathon/yarışma", "gnews": { "q": "hackathon OR datathon OR \"girişim yarışması\"", "lang": "tr" }, "region": "TR" },
+  { "name": "GNews: hızlandırıcı", "gnews": { "q": "\"hızlandırma programı\" OR kuluçka başvuru", "lang": "tr" }, "region": "TR" },
+  { "name": "GNews: TÜBİTAK/KOSGEB", "gnews": { "q": "TÜBİTAK BiGG OR KOSGEB OR teknogirişim çağrı", "lang": "tr" }, "region": "TR" },
+  { "name": "GNews: veri/yapay zeka yarışması", "gnews": { "q": "\"veri bilimi\" OR \"yapay zeka\" yarışma başvuru", "lang": "tr" }, "region": "TR" },
+  { "name": "GNews: öğrenci girişimcilik", "gnews": { "q": "üniversite öğrenci girişimcilik programı başvuru", "lang": "tr" }, "region": "TR" },
+  { "name": "GNews: zirve/etkinlik", "gnews": { "q": "girişimcilik zirvesi OR startup etkinliği", "lang": "tr" }, "region": "TR" },
+
+  { "name": "GNews: hackathon (EN)", "gnews": { "q": "hackathon \"applications open\" OR \"register now\"", "lang": "en" }, "region": "Global" },
+  { "name": "GNews: startup competition (EN)", "gnews": { "q": "\"startup competition\" applications open", "lang": "en" }, "region": "Global" },
+  { "name": "GNews: accelerator (EN)", "gnews": { "q": "accelerator program applications open students OR founders", "lang": "en" }, "region": "Global" },
+  { "name": "GNews: grant/fellowship (EN)", "gnews": { "q": "startup grant OR fellowship \"applications open\"", "lang": "en" }, "region": "Global" },
+  { "name": "GNews: data competition (EN)", "gnews": { "q": "datathon OR \"data science competition\"", "lang": "en" }, "region": "Global" }
+]
