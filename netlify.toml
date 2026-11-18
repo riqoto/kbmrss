@@ -1,5 +1,5 @@
 [build]
-  command = "mkdir -p public && cp -r web/. public/ && cp -r data public/data"
+  command = "node fetch.mjs || true; mkdir -p public && cp -r web/. public/ && cp -r data public/data"
   publish = "public"
 
 [build.environment]
